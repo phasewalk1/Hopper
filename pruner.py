@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 
 
+# Generic pruning operations
 class Pruner:
     def __init__(self):
         pass
@@ -17,6 +18,7 @@ class Pruner:
         return df.drop(df.index[random_indices])
 
 
+# Pruning operations on items
 class ItemPruner:
     def __init__(self):
         pass
@@ -26,6 +28,7 @@ class ItemPruner:
         return matrix.groupby("song_id").filter(func)
 
 
+# Pruning operations on users
 class UserPruner(Pruner):
     def __init__(self):
         super().__init__()

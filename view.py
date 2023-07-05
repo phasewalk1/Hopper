@@ -1,11 +1,20 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.metrics.pairwise import pairwise_distances
 from abc import ABC, abstractmethod
 
 from dataloader import Dataloader, TxLoader
 from globals import MOCK_MATRIX_FILE
 
 
+# Compute the Jaccard Similarity matrix for the given tx matrix
+def jaccard_similarity(matrix: pd.DataFrame):
+    dense = matrix.pivot(columns='song_id', values='ratings')
+    jac_sim = 1 - pairwise_distances(dense.T.fillna(0), metric="hamming")
+    return pd.DataFrame(jac_sim, index=dense.columns, columns=dense.columns)
+
+
+# A View is a helper class for data visualization and analysis
 class View(ABC):
     def __init__(self):
         pass
@@ -15,11 +24,11 @@ class View(ABC):
         pass
 
 
+# A View for the transaction matrix
 class TxMatrixView(View):
     def __init__(self):
         super().__init__()
 
-    # 'user_id', 'song_id', 'ratings'
     def view(self, matrix: pd.DataFrame, show=True, save=False):
         plt.title("Rating Distribution")
         plt.xlabel("Rating")
