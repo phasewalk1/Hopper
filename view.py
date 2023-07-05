@@ -9,7 +9,7 @@ from globals import MOCK_MATRIX_FILE
 
 # Compute the Jaccard Similarity matrix for the given tx matrix
 def jaccard_similarity(matrix: pd.DataFrame):
-    dense = matrix.pivot(columns='song_id', values='ratings')
+    dense = matrix.pivot(columns="song_id", values="ratings")
     jac_sim = 1 - pairwise_distances(dense.T.fillna(0), metric="hamming")
     return pd.DataFrame(jac_sim, index=dense.columns, columns=dense.columns)
 

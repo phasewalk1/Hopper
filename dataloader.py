@@ -28,8 +28,21 @@ class TxLoader(Dataloader):
             dtype={"user_id": np.int32, "song_id": np.int32, "ratings": np.float32},
         )
 
-    def prune(self, matrix: pd.DataFrame, min_interactions: int, max_interactions: int, min_rating: float):
+    @staticmethod
+    def save_set(matrix: pd.DataFrame, path: str):
+        # user_id will be the index
+        matrix.to_csv(path, columns=["song_id", "ratings"], mode="w")
+
+    def prune(
+        self,
+        matrix: pd.DataFrame,
+        min_interactions: int,
+        max_interactions: int,
+        min_rating: float,
+    ):
         user_pruner, item_pruner = self.pruners
-        matrix = user_pruner.normalize_interactions(matrix, min_interactions, max_interactions)
+        matrix = user_pruner.normalize_interactions(
+            matrix, min_interactions, max_interactions
+        )
         matrix = item_pruner.prune_low_ratings(matrix, min_rating)
         return matrix
