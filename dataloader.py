@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
 from abc import ABC, abstractmethod
 
-from globals import MATRIX_FILE, ITEM_METADATA_FILE
 from pruner import UserPruner, ItemPruner
 
 
@@ -22,9 +22,9 @@ class TxLoader(Dataloader):
         super().__init__()
 
     # Load the transaction matrix from a csv file
-    def load(self):
+    def load(self, path: str):
         return pd.read_csv(
-            MATRIX_FILE,
+            path,
             index_col="user_id",
             usecols=["user_id", "song_id", "ratings"],
             dtype={"user_id": np.int32, "song_id": np.int32, "ratings": np.float32},
@@ -73,14 +73,19 @@ class MetadataLoader(Dataloader):
     def __init__(self):
         super().__init__()
 
-    def load(self):
-        from globals import BARE_ROOT_NOTE_ENCODING, MODE_ENCODING, ACCIDENTAL_ENCODING
-
-        metadata = pd.read_csv(ITEM_METADATA_FILE, index_col="song_id")
-
-        metadata["key_encoded"] = metadata["key"].map(BARE_ROOT_NOTE_ENCODING)
-        metadata["mode_encoded"] = metadata["majorOrMinor"].map(MODE_ENCODING)
-        metadata["accidental_encoded"] = metadata["flatOrSharp"].map(
-            ACCIDENTAL_ENCODING
+    def load(self, path: str):
+        metadata = pd.read_csv(path, index_col="song_id")
+        metadata = self.encode_cols(
+            metadata, ["genre", "key", "majorOrMinor", "flatOrSharp"]
         )
+
+        return metadata
+
+    def encode_cols(self, metadata: pd.DataFrame, columns: list, replace=False):
+        for col in columns:
+            le = LabelEncoder()
+            if replace:
+                metadata[col] = le.fit_transform(metadata[col])
+            else:
+                metadata[col + "_encoded"] = le.fit_transform(metadata[col])
         return metadata

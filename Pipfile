@@ -12,6 +12,7 @@ pandas = "*"
 numpy = "*"
 matplotlib = "*"
 tqdm = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.11"
