@@ -7,10 +7,12 @@ class Pruner:
     def __init__(self):
         pass
 
-    def hard_limit_prune(self, df, column, limit):
+    @staticmethod
+    def hard_limit_prune(df, column, limit):
         return df[df[column] <= limit]
 
-    def random_prune(self, df, column, frac, seed):
+    @staticmethod
+    def random_prune(df, column, frac, seed):
         np.random.seed(seed)
         num_rows = len(df)
         rows_to_remove = int(num_rows * frac)
@@ -23,9 +25,16 @@ class ItemPruner:
     def __init__(self):
         pass
 
-    def prune_low_ratings(self, matrix, thresh):
+    @staticmethod
+    def prune_low_ratings(matrix, thresh):
         func = lambda x: x["rating"].max() >= thresh
         return matrix.groupby("song_id").filter(func)
+
+    @staticmethod
+    def drop_songs_with_no_metadata(matrix, features):
+        matrix = matrix[matrix["song_id"].isin(features.index)]
+        features = features[features.index.isin(matrix["song_id"])]
+        return matrix, features
 
 
 # Pruning operations on users
