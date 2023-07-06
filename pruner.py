@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 
 
@@ -27,8 +26,9 @@ class ItemPruner:
 
     @staticmethod
     def prune_low_ratings(matrix, thresh):
-        func = lambda x: x["rating"].max() >= thresh
-        return matrix.groupby("song_id").filter(func)
+        def filter(x):
+            return x["rating"].max() >= thresh
+        return matrix.groupby("song_id").filter(filter)
 
     @staticmethod
     def drop_songs_with_no_metadata(matrix, features):
