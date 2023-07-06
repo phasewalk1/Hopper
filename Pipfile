@@ -6,7 +6,8 @@ name = "pypi"
 [packages]
 
 [dev-packages]
-black = "*"
+black=="*"
+flake8 = "*"
 jupyterlab = "*"
 pandas = "*"
 numpy = "*"

@@ -1,30 +1,18 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
-from abc import ABC, abstractmethod
 
 from pruner import UserPruner, ItemPruner
 
 
-# A class that can handle preprocessing of data
-class Dataloader(ABC):
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def load(self, path: str):
-        pass
-
-
 # Loads the user-item transaction matrix
-class TxLoader(Dataloader):
-    def __init__(self):
-        super().__init__()
+class TxLoader:
+    def __init__(self, path):
+        self.path = path
 
-    # Load the transaction matrix from a csv file
-    def load(self, path: str):
+    def load(self):
         return pd.read_csv(
-            path,
+            self.path,
             index_col="user_id",
             usecols=["user_id", "song_id", "ratings"],
             dtype={"user_id": np.int32, "song_id": np.int32, "ratings": np.float32},
@@ -35,15 +23,14 @@ class TxLoader(Dataloader):
     # Pruning operations:
     #   - Normalize interactions (min_interactions, max_interactions)
     #   - Prune low ratings (min_rating)
-    @staticmethod
     def load_pruned(
-        path: str,
+        self,
         min_interactions: int,
         max_interactions: int,
         min_rating: float,
         against: pd.DataFrame = None,
     ):
-        matrix = TxLoader.load(path)
+        matrix = self.load(self.path)
         user_pruner, item_pruner = UserPruner(), ItemPruner()
         matrix = user_pruner.normalize_interactions(
             matrix, min_interactions, max_interactions
@@ -53,7 +40,6 @@ class TxLoader(Dataloader):
 
     # Prune the tx matrix against the features. If a song in the tx matrix
     # does not contain any features, it is removed from both dataframes.
-    @staticmethod
     def prune_against(
         matrix: pd.DataFrame,
         features: pd.DataFrame,
@@ -62,19 +48,18 @@ class TxLoader(Dataloader):
         return matrix, features
 
     # Save the dataframe as a dataset for the model
-    @staticmethod
     def save_set(matrix: pd.DataFrame, path: str):
         # user_id will be the index
         matrix.to_csv(path, columns=["song_id", "ratings"], mode="w")
 
 
 # Loads the item metadata
-class MetadataLoader(Dataloader):
-    def __init__(self):
-        super().__init__()
+class MetadataLoader:
+    def __init__(self, path):
+        self.path = path
 
-    def load(self, path: str):
-        metadata = pd.read_csv(path, index_col="song_id")
+    def load(self, test=False):
+        metadata = pd.read_csv(self.path, index_col="song_id")
         metadata = self.encode_cols(
             metadata, ["genre", "key", "majorOrMinor", "flatOrSharp"]
         )
