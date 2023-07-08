@@ -1,6 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import pairwise_distances
+import coloredlogs
+
+
+def logging_environment():
+    coloredlogs.install(level="DEBUG")
 
 
 # Compute the Jaccard Similarity matrix for the given tx matrix

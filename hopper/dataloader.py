@@ -1,8 +1,7 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+from pruner import ItemPruner, UserPruner
 from sklearn.preprocessing import LabelEncoder
-
-from pruner import UserPruner, ItemPruner
 
 
 # Loads the user-item transaction matrix
@@ -28,12 +27,13 @@ class TxLoader:
         min_interactions: int,
         max_interactions: int,
         min_rating: float,
-        against: pd.DataFrame = None,
     ):
-        matrix = self.load(self.path)
+        matrix = self.load()
         user_pruner, item_pruner = UserPruner(), ItemPruner()
         matrix = user_pruner.normalize_interactions(
-            matrix, min_interactions, max_interactions
+            matrix,
+            min_interactions,
+            max_interactions,
         )
         matrix = item_pruner.prune_low_ratings(matrix, min_rating)
         return matrix
@@ -41,6 +41,7 @@ class TxLoader:
     # Prune the tx matrix against the features. If a song in the tx matrix
     # does not contain any features, it is removed from both dataframes.
     def prune_against(
+        self,
         matrix: pd.DataFrame,
         features: pd.DataFrame,
     ):
@@ -48,7 +49,7 @@ class TxLoader:
         return matrix, features
 
     # Save the dataframe as a dataset for the model
-    def save_set(matrix: pd.DataFrame, path: str):
+    def save_set(self, matrix: pd.DataFrame, path: str):
         # user_id will be the index
         matrix.to_csv(path, columns=["song_id", "ratings"], mode="w")
 

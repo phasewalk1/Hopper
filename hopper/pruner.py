@@ -32,7 +32,7 @@ class ItemPruner:
 
 
 class UserPruner:
-    def normalize_interactions(matrix, min_interactions, max_interactions=None):
+    def normalize_interactions(self, matrix, min_interactions, max_interactions=None):
         if max_interactions is not None:
             matrix = hard_limit_prune(matrix, "user_id", max_interactions)
         matrix = hard_limit_prune(matrix, "user_id", min_interactions)
