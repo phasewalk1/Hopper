@@ -1,8 +1,8 @@
-from globals import SEED
-import click
 import logging
 import os
+import click
 
+from globals import SEED
 from mock.matrix import MockMatrix
 from view import logging_environment
 
@@ -22,7 +22,9 @@ def mock_tx_matrix_with_beta_distribution(
             "export=False: Run with 'python mocker.py --export' to export the mock matrix"
         )
     else:
-        logging.info("export=True: Exporting the mock matrix to ../data/mock/")
+        logging.info(
+            "export=True: Exporting the mock matrix to data/mock/mock-matrix.csv ..."
+        )
     logging.debug(f"num_users={num_users}")
     logging.debug(f"num_songs={num_songs}")
 
@@ -44,10 +46,8 @@ def mock_tx_matrix_with_beta_distribution(
     )
 
     if export is True:
-        path = os.path.join(os.path.dirname(__file__), "../data/mock/mock-matrix.csv")
-        return mocker.beta_distribution(
-            seed=SEED, export=True, path=path
-        )
+        path = os.path.join(os.path.dirname(__file__), "data/mock/mock-matrix.csv")
+        return mocker.beta_distribution(seed=SEED, export=True, path=path)
     else:
         return mocker.beta_distribution(seed=SEED)
 
